@@ -16,6 +16,9 @@ if length >= 8:
 if length >= 12:
     score += 20
 
+if has_uppercase:
+    score += 15
+
 print("\nPassword Analysis")
 print("-----------------")
 print("Length:", length)
