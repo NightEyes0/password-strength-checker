@@ -1,13 +1,11 @@
 password = input("Enter a password: ")
-
 length = len(password)
-
 has_uppercase = any(char.isupper() for char in password)
 has_lowercase = any(char.islower() for char in password)
 has_number = any(char.isdigit() for char in password)
-
 special_characters = "!@#$%^&*()-_=+[]{};:'\",.<>?/\\|`~"
 has_special = any(char in special_characters for char in password)
+score = 0
 
 print("\nPassword Analysis")
 print("-----------------")
