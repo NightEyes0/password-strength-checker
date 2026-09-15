@@ -1,3 +1,7 @@
+# Import libraries for hashing and API requests
+import hashlib
+import urllib.request
+
 # Get the password from the user
 password = input("Enter a password: ")
 
@@ -36,7 +40,33 @@ if has_number:
 if has_special:
     score += 15
 
-# password strength calc
+# Hash the password using SHA-1
+password_hash = hashlib.sha1(password.encode("utf-8")).hexdigest().upper()
+
+# Split the hash into a 5-character prefix and the remaining suffix
+hash_prefix = password_hash[:5]
+hash_suffix = password_hash[5:]
+
+# Check the password against the Have I Been Pwned API
+url = f"https://api.pwnedpasswords.com/range/{hash_prefix}"
+request = urllib.request.Request(
+    url,
+    headers={"User-Agent": "Password-Strength-Checker"}
+)
+
+response = urllib.request.urlopen(request)
+data = response.read().decode("utf-8")
+
+# Check whether the full hash appears in the API response
+times_pwned = 0
+
+for line in data.splitlines():
+    returned_suffix, count = line.split(":")
+    if returned_suffix == hash_suffix:
+        times_pwned = int(count)
+        break
+
+# Determine the password strength
 if score < 30:
     strength = "VERY WEAK"
 elif score < 50:
@@ -58,3 +88,4 @@ print("Number:", has_number)
 print("Special character:", has_special)
 print("Score:", score)
 print("Strength:", strength)
+print("Times found in breaches:", times_pwned)
