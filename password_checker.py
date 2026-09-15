@@ -1,7 +1,7 @@
-# Get password from user / input
+# Get the password from the user
 password = input("Enter a password: ")
 
-# Check password length
+# Check the password length
 length = len(password)
 
 # Check for different character types
@@ -13,7 +13,7 @@ has_number = any(char.isdigit() for char in password)
 special_characters = "!@#$%^&*()-_=+[]{};:'\",.<>?/\\|`~"
 has_special = any(char in special_characters for char in password)
 
-# Start score at zero
+# Start the score at zero
 score = 0
 
 # Award points based on password length
@@ -33,7 +33,10 @@ if has_lowercase:
 if has_number:
     score += 15
 
-# Display the password analysis/ Output
+if has_special:
+    score += 15
+
+# Display the password analysis
 print("\nPassword Analysis")
 print("-----------------")
 print("Length:", length)
