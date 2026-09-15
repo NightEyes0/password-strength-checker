@@ -67,7 +67,9 @@ for line in data.splitlines():
         break
 
 # Determine the password strength
-if score < 30:
+if times_pwned > 0:
+    strength = "COMPROMISED"
+elif score < 30:
     strength = "VERY WEAK"
 elif score < 50:
     strength = "WEAK"
