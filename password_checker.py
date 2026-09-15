@@ -13,6 +13,9 @@ score = 0
 if length >= 8:
     score += 20
 
+if length >= 12:
+    score += 20
+
 print("\nPassword Analysis")
 print("-----------------")
 print("Length:", length)
