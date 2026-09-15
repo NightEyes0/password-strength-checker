@@ -36,6 +36,18 @@ if has_number:
 if has_special:
     score += 15
 
+# password strength calc
+if score < 30:
+    strength = "VERY WEAK"
+elif score < 50:
+    strength = "WEAK"
+elif score < 70:
+    strength = "MODERATE"
+elif score < 90:
+    strength = "STRONG"
+else:
+    strength = "VERY STRONG"
+
 # Display the password analysis
 print("\nPassword Analysis")
 print("-----------------")
@@ -45,3 +57,4 @@ print("Lowercase:", has_lowercase)
 print("Number:", has_number)
 print("Special character:", has_special)
 print("Score:", score)
+print("Strength:", strength)
