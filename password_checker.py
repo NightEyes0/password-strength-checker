@@ -38,6 +38,10 @@ def calculate_score(length, has_uppercase, has_lowercase, has_number, has_specia
     if has_special:
         score += 15
 
+    # Short passwords cannot receive a high score
+    if length < 8:
+        score = min(score, 20)
+
     return score
 
 
