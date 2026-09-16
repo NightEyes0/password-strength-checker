@@ -2,18 +2,46 @@
 from password_checker import check_password, calculate_score, get_strength
 
 
-# Test password character checks
+# Test that all character types are detected
 def test_check_password():
     result = check_password("Hello123!")
 
     assert result == (9, True, True, True, True)
 
 
-# Test password scoring
-def test_calculate_score():
+# Test a password with only lowercase letters
+def test_lowercase_password():
+    result = check_password("hello")
+
+    assert result == (5, False, True, False, False)
+
+
+# Test a password with only numbers
+def test_number_password():
+    result = check_password("123456")
+
+    assert result == (6, False, False, True, False)
+
+
+# Test a password with a special character
+def test_special_character():
+    result = check_password("hello!")
+
+    assert result == (6, False, True, False, True)
+
+
+# Test the maximum password score
+def test_maximum_score():
     score = calculate_score(12, True, True, True, True)
 
     assert score == 100
+
+
+# Test a password with no requirements met
+def test_zero_score():
+    score = calculate_score(5, False, False, False, False)
+
+    assert score == 0
 
 
 # Test weak password rating
@@ -21,6 +49,13 @@ def test_weak_password():
     strength = get_strength(20, 0, True)
 
     assert strength == "VERY WEAK"
+
+
+# Test moderate password rating
+def test_moderate_password():
+    strength = get_strength(60, 0, True)
+
+    assert strength == "MODERATE"
 
 
 # Test strong password rating
