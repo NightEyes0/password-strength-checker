@@ -2,6 +2,7 @@
 import hashlib
 import urllib.request
 
+
 # Check the password for different character types
 def check_password(password):
     length = len(password)
@@ -13,6 +14,7 @@ def check_password(password):
     has_special = any(char in special_characters for char in password)
 
     return length, has_uppercase, has_lowercase, has_number, has_special
+
 
 # Calculate the password score
 def calculate_score(length, has_uppercase, has_lowercase, has_number, has_special):
@@ -38,6 +40,7 @@ def calculate_score(length, has_uppercase, has_lowercase, has_number, has_specia
 
     return score
 
+
 # Check the password against the Have I Been Pwned API
 def check_pwned_password(password):
     password_hash = hashlib.sha1(password.encode("utf-8")).hexdigest().upper()
@@ -47,6 +50,7 @@ def check_pwned_password(password):
 
     try:
         url = f"https://api.pwnedpasswords.com/range/{hash_prefix}"
+
         request = urllib.request.Request(
             url,
             headers={"User-Agent": "Password-Strength-Checker"}
@@ -66,6 +70,7 @@ def check_pwned_password(password):
     except urllib.error.URLError:
         return 0, False
 
+
 # Determine the password strength
 def get_strength(score, times_pwned, breach_check_available):
     if breach_check_available and times_pwned > 0:
@@ -82,43 +87,51 @@ def get_strength(score, times_pwned, breach_check_available):
     else:
         return "VERY STRONG"
 
-# Get the password from the user
-password = input("Enter a password: ")
 
-# Analyse the password
-length, has_uppercase, has_lowercase, has_number, has_special = check_password(password)
+# Run the password checker
+def main():
+    # Get the password from the user
+    password = input("Enter a password: ")
 
-# Calculate the password score
-score = calculate_score(
-    length,
-    has_uppercase,
-    has_lowercase,
-    has_number,
-    has_special
-)
+    # Analyse the password
+    length, has_uppercase, has_lowercase, has_number, has_special = check_password(password)
 
-# Check whether the password has appeared in breaches
-times_pwned, breach_check_available = check_pwned_password(password)
+    # Calculate the password score
+    score = calculate_score(
+        length,
+        has_uppercase,
+        has_lowercase,
+        has_number,
+        has_special
+    )
 
-# Determine the password strength
-strength = get_strength(
-    score,
-    times_pwned,
-    breach_check_available
-)
+    # Check whether the password has appeared in breaches
+    times_pwned, breach_check_available = check_pwned_password(password)
 
-# Display the password analysis
-print("\nPassword Analysis")
-print("-----------------")
-print("Length:", length)
-print("Uppercase:", has_uppercase)
-print("Lowercase:", has_lowercase)
-print("Number:", has_number)
-print("Special character:", has_special)
-print("Score:", score)
-print("Strength:", strength)
+    # Determine the password strength
+    strength = get_strength(
+        score,
+        times_pwned,
+        breach_check_available
+    )
 
-if breach_check_available:
-    print("Times found in breaches:", times_pwned)
-else:
-    print("Breach check: Unavailable")
+    # Display the password analysis
+    print("\nPassword Analysis")
+    print("-----------------")
+    print("Length:", length)
+    print("Uppercase:", has_uppercase)
+    print("Lowercase:", has_lowercase)
+    print("Number:", has_number)
+    print("Special character:", has_special)
+    print("Score:", score)
+    print("Strength:", strength)
+
+    if breach_check_available:
+        print("Times found in breaches:", times_pwned)
+    else:
+        print("Breach check: Unavailable")
+
+
+# Only run the program when this file is executed directly
+if __name__ == "__main__":
+    main()
