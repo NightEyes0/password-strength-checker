@@ -3,7 +3,8 @@ from password_checker import (
     check_password,
     calculate_score,
     check_pwned_password,
-    get_strength
+    get_strength,
+    generate_password
 )
 
 from unittest.mock import patch
@@ -91,3 +92,29 @@ def test_pwned_password(mock_urlopen):
     result = check_pwned_password("password")
 
     assert result[1] is True
+
+
+# Test that generated passwords have the requested length
+def test_generated_password_length():
+    password = generate_password(20)
+
+    assert len(password) == 20
+
+
+# Test that generated passwords contain the required character types
+def test_generated_password_character_types():
+    password = generate_password(20)
+
+    assert any(char.isupper() for char in password)
+    assert any(char.islower() for char in password)
+    assert any(char.isdigit() for char in password)
+    assert any(char in "!@#$%^&*()-_=+[]{};:'\",.<>?/\\|`~" for char in password)
+
+
+# Test that passwords shorter than 4 characters are rejected
+def test_generated_password_too_short():
+    try:
+        generate_password(3)
+        assert False
+    except ValueError:
+        assert True
