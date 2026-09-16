@@ -1,6 +1,8 @@
-# Import libraries for hashing and API requests
+# Import libraries for hashing, API requests, and password generation
 import hashlib
 import urllib.request
+import secrets
+import string
 
 
 # Check the password for different character types
@@ -14,6 +16,30 @@ def check_password(password):
     has_special = any(char in special_characters for char in password)
 
     return length, has_uppercase, has_lowercase, has_number, has_special
+
+
+# Generate a secure random password
+def generate_password(length=16):
+    if length < 4:
+        raise ValueError("Password length must be at least 4.")
+
+    special_characters = "!@#$%^&*()-_=+[]{};:'\",.<>?/\\|`~"
+
+    password_characters = [
+        secrets.choice(string.ascii_uppercase),
+        secrets.choice(string.ascii_lowercase),
+        secrets.choice(string.digits),
+        secrets.choice(special_characters)
+    ]
+
+    all_characters = string.ascii_letters + string.digits + special_characters
+
+    while len(password_characters) < length:
+        password_characters.append(secrets.choice(all_characters))
+
+    secrets.SystemRandom().shuffle(password_characters)
+
+    return "".join(password_characters)
 
 
 # Calculate the password score
