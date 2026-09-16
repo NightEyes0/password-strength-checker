@@ -4,7 +4,6 @@ import urllib.request
 import secrets
 import string
 
-
 # Check the password for different character types
 def check_password(password):
     length = len(password)
@@ -17,14 +16,12 @@ def check_password(password):
 
     return length, has_uppercase, has_lowercase, has_number, has_special
 
-
 # Generate a secure random password
 def generate_password(length=16):
     if length < 4:
         raise ValueError("Password length must be at least 4.")
 
     special_characters = "!@#$%^&*()-_=+[]{};:'\",.<>?/\\|`~"
-
     password_characters = [
         secrets.choice(string.ascii_uppercase),
         secrets.choice(string.ascii_lowercase),
@@ -41,26 +38,20 @@ def generate_password(length=16):
 
     return "".join(password_characters)
 
-
 # Calculate the password score
 def calculate_score(length, has_uppercase, has_lowercase, has_number, has_special):
     score = 0
 
     if length >= 8:
         score += 20
-
     if length >= 12:
         score += 20
-
     if has_uppercase:
         score += 15
-
     if has_lowercase:
         score += 15
-
     if has_number:
         score += 15
-
     if has_special:
         score += 15
 
@@ -70,26 +61,20 @@ def calculate_score(length, has_uppercase, has_lowercase, has_number, has_specia
 
     return score
 
-
 # Generate recommendations for improving the password
 def get_recommendations(length, has_uppercase, has_lowercase, has_number, has_special):
     recommendations = []
 
     if length < 8:
         recommendations.append("Use at least 8 characters.")
-
     if length < 12:
         recommendations.append("Consider using at least 12 characters.")
-
     if not has_uppercase:
         recommendations.append("Add an uppercase letter.")
-
     if not has_lowercase:
         recommendations.append("Add a lowercase letter.")
-
     if not has_number:
         recommendations.append("Add a number.")
-
     if not has_special:
         recommendations.append("Add a special character.")
 
@@ -98,17 +83,14 @@ def get_recommendations(length, has_uppercase, has_lowercase, has_number, has_sp
 
     return recommendations
 
-
 # Check the password against the Have I Been Pwned API
 def check_pwned_password(password):
     password_hash = hashlib.sha1(password.encode("utf-8")).hexdigest().upper()
-
     hash_prefix = password_hash[:5]
     hash_suffix = password_hash[5:]
 
     try:
         url = f"https://api.pwnedpasswords.com/range/{hash_prefix}"
-
         request = urllib.request.Request(
             url,
             headers={"User-Agent": "Password-Strength-Checker"}
@@ -128,7 +110,6 @@ def check_pwned_password(password):
     except urllib.error.URLError:
         return 0, False
 
-
 # Determine the password strength
 def get_strength(score, times_pwned, breach_check_available):
     if breach_check_available and times_pwned > 0:
@@ -144,7 +125,6 @@ def get_strength(score, times_pwned, breach_check_available):
         return "STRONG"
     else:
         return "VERY STRONG"
-
 
 # Run the password checker
 def main():
@@ -167,11 +147,7 @@ def main():
     times_pwned, breach_check_available = check_pwned_password(password)
 
     # Determine the password strength
-    strength = get_strength(
-        score,
-        times_pwned,
-        breach_check_available
-    )
+    strength = get_strength(score, times_pwned, breach_check_available)
 
     # Generate recommendations
     recommendations = get_recommendations(
@@ -204,7 +180,6 @@ def main():
 
     for recommendation in recommendations:
         print("-", recommendation)
-
 
 # Only run the program when this file is executed directly
 if __name__ == "__main__":
