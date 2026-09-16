@@ -1,5 +1,12 @@
 # Import functions from the password checker
-from password_checker import check_password, calculate_score, get_strength
+from password_checker import (
+    check_password,
+    calculate_score,
+    check_pwned_password,
+    get_strength
+)
+
+from unittest.mock import patch
 
 
 # Test that all character types are detected
@@ -70,3 +77,17 @@ def test_compromised_password():
     strength = get_strength(100, 1000, True)
 
     assert strength == "COMPROMISED"
+
+
+# Test the HIBP function with a mocked API response
+@patch("password_checker.urllib.request.urlopen")
+def test_pwned_password(mock_urlopen):
+    class FakeResponse:
+        def read(self):
+            return b"CBFDA5E9E5A8C1B2D3E4F5A6B7C8D9E0:12345\n"
+
+    mock_urlopen.return_value = FakeResponse()
+
+    result = check_pwned_password("password")
+
+    assert result[1] is True
