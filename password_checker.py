@@ -22,6 +22,7 @@ def generate_password(length=16):
         raise ValueError("Password length must be at least 4.")
 
     special_characters = "!@#$%^&*()-_=+[]{};:'\",.<>?/\\|`~"
+
     password_characters = [
         secrets.choice(string.ascii_uppercase),
         secrets.choice(string.ascii_lowercase),
@@ -91,6 +92,7 @@ def check_pwned_password(password):
 
     try:
         url = f"https://api.pwnedpasswords.com/range/{hash_prefix}"
+
         request = urllib.request.Request(
             url,
             headers={"User-Agent": "Password-Strength-Checker"}
@@ -107,7 +109,7 @@ def check_pwned_password(password):
 
         return 0, True
 
-    except urllib.error.URLError:
+    except (urllib.error.URLError, ValueError):
         return 0, False
 
 # Determine the password strength
@@ -130,6 +132,10 @@ def get_strength(score, times_pwned, breach_check_available):
 def main():
     # Get the password from the user
     password = input("Enter a password: ")
+
+    if not password:
+        print("Password cannot be empty.")
+        return
 
     # Analyse the password
     length, has_uppercase, has_lowercase, has_number, has_special = check_password(password)
