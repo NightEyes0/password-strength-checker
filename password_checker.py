@@ -2,88 +2,110 @@
 import hashlib
 import urllib.request
 
+# Check the password for different character types
+def check_password(password):
+    length = len(password)
+    has_uppercase = any(char.isupper() for char in password)
+    has_lowercase = any(char.islower() for char in password)
+    has_number = any(char.isdigit() for char in password)
+
+    special_characters = "!@#$%^&*()-_=+[]{};:'\",.<>?/\\|`~"
+    has_special = any(char in special_characters for char in password)
+
+    return length, has_uppercase, has_lowercase, has_number, has_special
+
+# Calculate the password score
+def calculate_score(length, has_uppercase, has_lowercase, has_number, has_special):
+    score = 0
+
+    if length >= 8:
+        score += 20
+
+    if length >= 12:
+        score += 20
+
+    if has_uppercase:
+        score += 15
+
+    if has_lowercase:
+        score += 15
+
+    if has_number:
+        score += 15
+
+    if has_special:
+        score += 15
+
+    return score
+
+# Check the password against the Have I Been Pwned API
+def check_pwned_password(password):
+    password_hash = hashlib.sha1(password.encode("utf-8")).hexdigest().upper()
+
+    hash_prefix = password_hash[:5]
+    hash_suffix = password_hash[5:]
+
+    try:
+        url = f"https://api.pwnedpasswords.com/range/{hash_prefix}"
+        request = urllib.request.Request(
+            url,
+            headers={"User-Agent": "Password-Strength-Checker"}
+        )
+
+        response = urllib.request.urlopen(request)
+        data = response.read().decode("utf-8")
+
+        for line in data.splitlines():
+            returned_suffix, count = line.split(":")
+
+            if returned_suffix == hash_suffix:
+                return int(count), True
+
+        return 0, True
+
+    except urllib.error.URLError:
+        return 0, False
+
+# Determine the password strength
+def get_strength(score, times_pwned, breach_check_available):
+    if breach_check_available and times_pwned > 0:
+        return "COMPROMISED"
+
+    if score < 30:
+        return "VERY WEAK"
+    elif score < 50:
+        return "WEAK"
+    elif score < 70:
+        return "MODERATE"
+    elif score < 90:
+        return "STRONG"
+    else:
+        return "VERY STRONG"
+
 # Get the password from the user
 password = input("Enter a password: ")
 
-# Check the password length
-length = len(password)
+# Analyse the password
+length, has_uppercase, has_lowercase, has_number, has_special = check_password(password)
 
-# Check for different character types
-has_uppercase = any(char.isupper() for char in password)
-has_lowercase = any(char.islower() for char in password)
-has_number = any(char.isdigit() for char in password)
+# Calculate the password score
+score = calculate_score(
+    length,
+    has_uppercase,
+    has_lowercase,
+    has_number,
+    has_special
+)
 
-# Check for special characters
-special_characters = "!@#$%^&*()-_=+[]{};:'\",.<>?/\\|`~"
-has_special = any(char in special_characters for char in password)
-
-# Start the score at zero
-score = 0
-
-# Award points based on password length
-if length >= 8:
-    score += 20
-
-if length >= 12:
-    score += 20
-
-# Award points for character types
-if has_uppercase:
-    score += 15
-
-if has_lowercase:
-    score += 15
-
-if has_number:
-    score += 15
-
-if has_special:
-    score += 15
-
-# Hash the password using SHA-1
-password_hash = hashlib.sha1(password.encode("utf-8")).hexdigest().upper()
-
-# Split the hash into a 5-character prefix and the remaining suffix
-hash_prefix = password_hash[:5]
-hash_suffix = password_hash[5:]
-
-# Check the password against the Have I Been Pwned API
-times_pwned = 0
-breach_check_available = True
-
-try:
-    url = f"https://api.pwnedpasswords.com/range/{hash_prefix}"
-    request = urllib.request.Request(
-        url,
-        headers={"User-Agent": "Password-Strength-Checker"}
-    )
-
-    response = urllib.request.urlopen(request)
-    data = response.read().decode("utf-8")
-
-    # Check whether the full hash appears in the API response
-    for line in data.splitlines():
-        returned_suffix, count = line.split(":")
-        if returned_suffix == hash_suffix:
-            times_pwned = int(count)
-            break
-
-except urllib.error.URLError:
-    breach_check_available = False
+# Check whether the password has appeared in breaches
+times_pwned, breach_check_available = check_pwned_password(password)
 
 # Determine the password strength
-if breach_check_available and times_pwned > 0:
-    strength = "COMPROMISED"
-elif score < 30:
-    strength = "VERY WEAK"
-elif score < 50:
-    strength = "WEAK"
-elif score < 70:
-    strength = "MODERATE"
-elif score < 90:
-    strength = "STRONG"
-else:
-    strength = "VERY STRONG"
+strength = get_strength(
+    score,
+    times_pwned,
+    breach_check_available
+)
 
 # Display the password analysis
 print("\nPassword Analysis")
