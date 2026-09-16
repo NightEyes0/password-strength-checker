@@ -41,6 +41,34 @@ def calculate_score(length, has_uppercase, has_lowercase, has_number, has_specia
     return score
 
 
+# Generate recommendations for improving the password
+def get_recommendations(length, has_uppercase, has_lowercase, has_number, has_special):
+    recommendations = []
+
+    if length < 8:
+        recommendations.append("Use at least 8 characters.")
+
+    if length < 12:
+        recommendations.append("Consider using at least 12 characters.")
+
+    if not has_uppercase:
+        recommendations.append("Add an uppercase letter.")
+
+    if not has_lowercase:
+        recommendations.append("Add a lowercase letter.")
+
+    if not has_number:
+        recommendations.append("Add a number.")
+
+    if not has_special:
+        recommendations.append("Add a special character.")
+
+    if not recommendations:
+        recommendations.append("Your password meets all basic requirements.")
+
+    return recommendations
+
+
 # Check the password against the Have I Been Pwned API
 def check_pwned_password(password):
     password_hash = hashlib.sha1(password.encode("utf-8")).hexdigest().upper()
@@ -115,6 +143,15 @@ def main():
         breach_check_available
     )
 
+    # Generate recommendations
+    recommendations = get_recommendations(
+        length,
+        has_uppercase,
+        has_lowercase,
+        has_number,
+        has_special
+    )
+
     # Display the password analysis
     print("\nPassword Analysis")
     print("-----------------")
@@ -130,6 +167,13 @@ def main():
         print("Times found in breaches:", times_pwned)
     else:
         print("Breach check: Unavailable")
+
+    # Display recommendations
+    print("\nRecommendations")
+    print("----------------")
+
+    for recommendation in recommendations:
+        print("-", recommendation)
 
 
 # Only run the program when this file is executed directly
